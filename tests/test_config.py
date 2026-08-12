@@ -57,6 +57,19 @@ class TestTextosPorInstancia:
             raise AssertionError("una lista no vale como TEXTS_FILE")
 
 
+class TestAvisoPorEmail:
+    def test_sin_destinatario_no_se_intenta_enviar(self, monkeypatch):
+        # el lead se guarda igual en disco; lo que no puede es reventar el turno
+        monkeypatch.setattr(server, "EMAIL_TO", "")
+        monkeypatch.setattr(server, "EMAIL_FROM", "")
+
+        def no_deberia_llamarse(*a, **k):
+            raise AssertionError("no debería abrir una conexión SMTP sin destinatario")
+
+        monkeypatch.setattr(server.smtplib, "SMTP", no_deberia_llamarse)
+        server._send_email_sync("sesion123", [], {"emails": ["a@b.es"]})
+
+
 class TestSlug:
     # COMPANY_NAME lo pone cada instancia y trae acentos, puntos y paréntesis;
     # va a la cabecera Content-Disposition, que la RFC 6266 quiere en ASCII.

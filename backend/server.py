@@ -67,8 +67,11 @@ GROQ_API_KEY       = os.getenv("GROQ_API_KEY")
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
 # `or` en vez de default de getenv: una variable definida pero VACÍA en el .env
 # (EMAIL_FROM=) devolvía "" y el login SMTP fallaba con 535 BadCredentials.
-EMAIL_FROM         = os.getenv("EMAIL_FROM") or "sdelapenya1991@gmail.com"
-EMAIL_TO           = os.getenv("EMAIL_TO") or "sdelapenya1991@gmail.com"
+# Sin EMAIL_FROM se usa EMAIL_TO: el caso normal es que el buzón que recibe los
+# leads sea la misma cuenta que los envía. Sin ninguno de los dos, el aviso por
+# email queda desactivado y el lead se guarda igual en disco y en el webhook.
+EMAIL_TO           = os.getenv("EMAIL_TO") or ""
+EMAIL_FROM         = os.getenv("EMAIL_FROM") or EMAIL_TO
 SMTP_HOST          = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT          = int(os.getenv("SMTP_PORT", "587"))
 SMTP_TIMEOUT       = 15
@@ -1009,6 +1012,9 @@ def _build_html_email(session_id: str, messages: list[Message], lead_data: dict,
 
 
 def _send_email_sync(session_id: str, messages: list[Message], lead_data: dict, channel: str = "web"):
+    if not EMAIL_TO or not EMAIL_FROM:
+        logger.warning("Lead %s sin aviso por email: falta EMAIL_TO en la configuración", session_id[:8])
+        return
     summary = lead_data.get("summary") or {}
     priority = (summary.get("prioridad") or "").lower() if isinstance(summary, dict) else ""
     subject_tag = "URGENTE" if priority == "alta" else "Nuevo lead"
