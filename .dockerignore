@@ -1,0 +1,30 @@
+# Secretos: que no entren en la imagen ni por accidente
+.env
+.env.*
+*.env
+backend/.env
+
+# Entornos y caché de Python
+backend/venv/
+.venv-dev/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Datos de producción
+data/
+logs/
+*.jsonl
+sessions.json
+backend/uvicorn.log
+
+# Nada de esto hace falta para ejecutar
+.git/
+.github/
+docs/
+tests/
+operaciones/
+scripts/
+AGENTS.md
+CLAUDE.md

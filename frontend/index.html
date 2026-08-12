@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chatbot-engine — página de prueba</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 3rem 1.5rem;
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #f7f8fa; color: #1a1d21;
+  }
+  main { max-width: 44rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
+  p.lead { color: #5b6470; margin-top: 0; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .875rem; }
+  pre {
+    background: #11151a; color: #e6edf3; padding: 1rem 1.1rem;
+    border-radius: 8px; overflow-x: auto;
+  }
+  .aviso {
+    border-left: 3px solid #2563eb; background: #eef3ff;
+    padding: .8rem 1rem; border-radius: 0 6px 6px 0; margin: 1.5rem 0;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #14171a; color: #e6e9ec; }
+    p.lead { color: #9aa4b0; }
+    .aviso { background: #1b2433; border-color: #3b82f6; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>chatbot-engine</h1>
+  <p class="lead">Página de prueba del motor. El widget está abajo a la derecha.</p>
+
+  <div class="aviso">
+    Esto es lo que ve una instancia recién levantada. En un despliegue real,
+    <code>FRONTEND_DIR</code> apunta a la web del negocio y esta página se
+    sustituye por la suya.
+  </div>
+
+  <p>Para embeberlo en cualquier web, una etiqueta y nada más:</p>
+
+<pre><code>&lt;script
+  src="https://tu-dominio/widget.js"
+  data-url="https://tu-dominio"
+  data-color="#2563eb"
+  data-bot-name="Asistente"
+&gt;&lt;/script&gt;</code></pre>
+
+  <p>
+    El título, la bienvenida y el nombre del bot los sirve
+    <code>/api/config</code>, así que se cambian en el <code>.env</code> de la
+    instancia sin tocar la web donde está embebido.
+  </p>
+</main>
+
+<script>
+  // El widget necesita saber a qué backend hablar (data-url). En una web real
+  // es el dominio de la instancia, escrito a mano; aquí no se sabe de antemano,
+  // así que se inserta con el origen actual — sirve igual en localhost que en
+  // el dominio donde se despliegue.
+  (function () {
+    var s = document.createElement('script');
+    s.src = '/widget.js';
+    s.setAttribute('data-url', window.location.origin);
+    s.setAttribute('data-color', '#2563eb');
+    s.setAttribute('data-bot-name', 'Asistente');
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>

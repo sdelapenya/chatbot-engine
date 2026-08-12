@@ -1,0 +1,24 @@
+[tool.pytest.ini_options]
+# El código vive en backend/ y se importa como módulos sueltos (`import server`),
+# que es como lo arranca uvicorn en producción.
+pythonpath = ["backend"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+# Holgado a propósito: el email HTML del lead se construye con f-strings largas
+# y partirlas para cumplir 88 o 120 se lee peor que dejarlas.
+line-length = 150
+exclude = ["backend/venv", ".venv-dev"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    # El bloque de configuración alinea los `=` a propósito para leerse como una tabla.
+    "E221",
+]
+
+[tool.ruff.lint.isort]
+# backend/ no es un paquete: uvicorn lo arranca desde dentro y los módulos se
+# importan sueltos. Sin esto, `import whatsapp` se ordena como si fuera de PyPI.
+known-first-party = ["server", "whatsapp"]

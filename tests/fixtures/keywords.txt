@@ -1,0 +1,6 @@
+# comentario que no es palabra clave
+
+presupuesto
+perfil
+metros
+JUNTA

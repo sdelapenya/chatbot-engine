@@ -1,0 +1,30 @@
+# Una unidad plantilla para todas las instancias. El nombre tras la @ es el
+# directorio de la instancia, que contiene su .env, su prompt y su frontend:
+#
+#   sudo cp chatbot@.service /etc/systemd/system/
+#   sudo systemctl enable --now chatbot@clinica
+#
+# El puerto va en el .env de la instancia (PORT=8003), igual que el resto de su
+# configuración: así una instancia nueva no obliga a editar la unidad.
+[Unit]
+Description=Chatbot %i (FastAPI + Uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=chatbot
+WorkingDirectory=/opt/chatbot-engine/backend
+EnvironmentFile=/opt/chatbots/%i/.env
+ExecStart=/opt/chatbot-engine/backend/venv/bin/uvicorn server:app --host 127.0.0.1 --port ${PORT}
+Restart=on-failure
+RestartSec=5
+
+# El proceso solo necesita escribir en su LOG_DIR
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/chatbots/%i
+
+[Install]
+WantedBy=multi-user.target

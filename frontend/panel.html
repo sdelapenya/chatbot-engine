@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de control</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563eb; --primary-dark: #1d4ed8;
+      --dark: #0f172a; --gray: #64748b; --light: #f8fafc;
+      --border: #e2e8f0; --green: #16a34a; --red: #dc2626;
+      --accent: #f59e0b;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--light); color: var(--dark); }
+
+    /* ── Login ── */
+    #login {
+      position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      display: flex; align-items: center; justify-content: center; z-index: 999;
+    }
+    .login-box {
+      background: #fff; border-radius: 20px; padding: 48px 40px;
+      width: 100%; max-width: 380px; text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,.3);
+    }
+    .login-icon { font-size: 48px; margin-bottom: 16px; }
+    .login-box h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .login-box p { font-size: 14px; color: var(--gray); margin-bottom: 28px; }
+    .login-box input {
+      width: 100%; padding: 13px 16px; border: 2px solid var(--border);
+      border-radius: 10px; font-size: 15px; outline: none; margin-bottom: 12px;
+      transition: border-color .2s;
+    }
+    .login-box input:focus { border-color: var(--primary); }
+    .login-box button {
+      width: 100%; padding: 13px; background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .login-box button:hover { background: var(--primary-dark); }
+    .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; min-height: 100vh; }
+
+    nav {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .nav-brand { font-size: 16px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-update { font-size: 12px; color: var(--gray); }
+    .btn-refresh {
+      background: var(--light); border: 1px solid var(--border); color: var(--dark);
+      padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 500;
+    }
+    .btn-refresh:hover { background: var(--border); }
+    .btn-logout {
+      background: none; border: none; color: var(--gray);
+      font-size: 13px; cursor: pointer; padding: 7px 10px;
+    }
+    .btn-logout:hover { color: var(--red); }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 20px;
+    }
+    .stat-card.accent { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
+    .stat-icon { font-size: 24px; margin-bottom: 12px; }
+    .stat-value { font-size: 36px; font-weight: 800; color: var(--dark); line-height: 1; margin-bottom: 6px; }
+    .stat-card.accent .stat-value { color: var(--primary); }
+    .stat-label { font-size: 13px; color: var(--gray); font-weight: 500; }
+
+    /* ── Leads section ── */
+    .section { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .section-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-header h2 { font-size: 16px; font-weight: 700; }
+    .section-header .meta { font-size: 13px; color: var(--gray); margin-left: 8px; font-weight: 400; }
+    .btn-export {
+      background: var(--primary); color: #fff; border: none;
+      padding: 8px 16px; border-radius: 8px; font-size: 13px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-export:hover { background: var(--primary-dark); }
+
+    #leads-container { padding: 0; }
+    .leads-empty {
+      text-align: center; padding: 56px 24px; color: var(--gray);
+    }
+    .leads-empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .leads-empty p { font-size: 14px; }
+
+    .leads-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .leads-table th {
+      text-align: left; padding: 12px 20px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--gray);
+      background: var(--light); border-bottom: 1px solid var(--border);
+    }
+    .leads-table td {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .leads-table tr:last-child td { border-bottom: none; }
+    .leads-table tr:hover td { background: #fafbff; }
+
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; margin: 2px 2px 2px 0;
+    }
+    .badge-email { background: #eff6ff; color: #2563eb; }
+    .badge-phone { background: #f0fdf4; color: #16a34a; }
+    .badge-kw    { background: #fefce8; color: #92400e; }
+
+    .session-id { font-family: monospace; font-size: 12px; color: var(--gray); }
+    .date-cell  { white-space: nowrap; font-size: 13px; color: var(--gray); }
+
+    .loading { text-align: center; padding: 40px; color: var(--gray); font-size: 14px; }
+    .error-msg { color: var(--red); text-align: center; padding: 24px; font-size: 14px; }
+
+    @media (max-width: 640px) {
+      main { padding: 20px 16px; }
+      .stat-value { font-size: 28px; }
+      .leads-table th:nth-child(4),
+      .leads-table td:nth-child(4),
+      .leads-table th:nth-child(5),
+      .leads-table td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ── -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-icon">🤖</div>
+    <h1>Panel de control</h1>
+    <p>Accede con tu token para ver tus leads y estadísticas</p>
+    <input type="password" id="token-input" placeholder="Token de acceso" autocomplete="off">
+    <button onclick="doLogin()">Entrar →</button>
+    <p class="login-error" id="login-error">Token incorrecto. Compruébalo e inténtalo de nuevo.</p>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<div id="dashboard">
+  <nav>
+    <div class="nav-brand">🤖 <span id="company-name">Panel</span></div>
+    <div class="nav-right">
+      <span class="nav-update" id="last-update"></span>
+      <button class="btn-refresh" onclick="refresh()">↻ Actualizar</button>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-value" id="s-conversations">—</div>
+        <div class="stat-label">Conversaciones totales</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value" id="s-leads">—</div>
+        <div class="stat-label">Leads captados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🟢</div>
+        <div class="stat-value" id="s-active">—</div>
+        <div class="stat-label">Sesiones activas ahora</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏱</div>
+        <div class="stat-value" id="s-uptime">—</div>
+        <div class="stat-label">Uptime del asistente</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <h2>Leads captados <span class="meta" id="leads-count"></span></h2>
+        </div>
+        <button class="btn-export" onclick="exportCSV()">⬇ Exportar CSV</button>
+      </div>
+      <div id="leads-container">
+        <p class="loading">Cargando leads...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let TOKEN = localStorage.getItem('panel_token') || '';
+  if (TOKEN) boot(); else showLogin();
+
+  function showLogin() {
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+
+  function boot() {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    refresh();
+    setInterval(refresh, 60000);
+  }
+
+  function doLogin() {
+    const input = document.getElementById('token-input');
+    TOKEN = input.value.trim();
+    if (!TOKEN) return;
+    document.getElementById('login-error').style.display = 'none';
+    fetch('/api/leads?token=' + encodeURIComponent(TOKEN))
+      .then(r => {
+        if (r.ok) {
+          localStorage.setItem('panel_token', TOKEN);
+          boot();
+        } else {
+          TOKEN = '';
+          document.getElementById('login-error').style.display = 'block';
+          input.value = '';
+          input.focus();
+        }
+      })
+      .catch(() => {
+        TOKEN = '';
+        document.getElementById('login-error').style.display = 'block';
+      });
+  }
+
+  function logout() {
+    localStorage.removeItem('panel_token');
+    TOKEN = '';
+    showLogin();
+  }
+
+  async function refresh() {
+    await Promise.all([loadStats(), loadLeads()]);
+    document.getElementById('last-update').textContent =
+      'Actualizado ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  async function loadStats() {
+    try {
+      const r = await fetch('/api/stats');
+      if (!r.ok) return;
+      const d = await r.json();
+      document.getElementById('company-name').textContent = d.company || 'Panel';
+      document.getElementById('s-conversations').textContent = d.total_conversations ?? '—';
+      document.getElementById('s-active').textContent = d.active_sessions ?? '—';
+      const u = d.uptime_seconds || 0;
+      const h = Math.floor(u / 3600), m = Math.floor((u % 3600) / 60);
+      document.getElementById('s-uptime').textContent = h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+    } catch (_) {}
+  }
+
+  async function loadLeads() {
+    const container = document.getElementById('leads-container');
+    try {
+      const r = await fetch('/api/leads?token=' + encodeURIComponent(TOKEN));
+      if (r.status === 401) { logout(); return; }
+      if (!r.ok) { container.innerHTML = '<p class="error-msg">Error al cargar leads.</p>'; return; }
+      const data = await r.json();
+
+      document.getElementById('s-leads').textContent = data.total ?? '—';
+      document.getElementById('leads-count').textContent =
+        data.total > 0 ? '(' + data.total + ')' : '';
+
+      if (!data.leads || data.leads.length === 0) {
+        container.innerHTML = `
+          <div class="leads-empty">
+            <div class="empty-icon">📭</div>
+            <p>Todavía no hay leads captados.<br>Cuando el asistente detecte un cliente interesado, aparecerá aquí.</p>
+          </div>`;
+        return;
+      }
+
+      const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      const rows = data.leads.map(lead => {
+        const d = lead.data || {};
+        const s = d.summary || {};
+        const emails = (d.emails || []).map(e => `<span class="badge badge-email">${esc(e)}</span>`).join('') || '—';
+        const phones = (d.phones || []).map(p => `<span class="badge badge-phone">${esc(p)}</span>`).join('') || '—';
+        const prio = s.prioridad ? `<span class="badge badge-kw">${esc(s.prioridad)}</span>` : '—';
+        const dt     = lead.timestamp
+          ? new Date(lead.timestamp).toLocaleString('es-ES', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+          : '—';
+        const sid = (lead.session_id || '').substring(0, 10);
+        const resumen = s.resumen ? esc(s.resumen).slice(0, 80) + (s.resumen.length > 80 ? '…' : '') : '—';
+        return `<tr>
+          <td class="date-cell">${dt}</td>
+          <td>${esc(s.nombre) || '—'}</td>
+          <td>${esc(s.empresa) || '—'}</td>
+          <td>${esc(s.producto) || resumen}</td>
+          <td>${prio}</td>
+          <td>${emails}</td>
+          <td>${phones}</td>
+          <td class="session-id">${sid}</td>
+        </tr>`;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="leads-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Nombre</th>
+              <th>Empresa</th>
+              <th>Producto</th>
+              <th>Prioridad</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Sesión</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    } catch (e) {
+      container.innerHTML = '<p class="error-msg">Error de conexión.</p>';
+    }
+  }
+
+  function exportCSV() {
+    window.location.href = '/api/leads/export?token=' + encodeURIComponent(TOKEN);
+  }
+
+  document.getElementById('token-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+</script>
+</body>
+</html>

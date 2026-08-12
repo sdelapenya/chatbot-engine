@@ -1,0 +1,7 @@
+# Dependencias del motor. Versiones fijadas a las que corren en el servidor
+# (backend/venv, 2026-08-12): si el CI o el contenedor rompen, se ve aquí.
+fastapi==0.136.1
+uvicorn==0.46.0
+httpx==0.28.1
+pydantic==2.13.3
+python-dotenv==1.2.2

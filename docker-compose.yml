@@ -1,0 +1,18 @@
+# Levantar una instancia en local:
+#   cp .env.example .env && $EDITOR .env
+#   docker compose up --build
+# El chat queda en http://localhost:8000
+services:
+  chatbot:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Los leads y las conversaciones sobreviven al contenedor
+      - ./data:/app/data
+      # Prompt, palabras clave y textos de la instancia, sin reconstruir imagen
+      - ./backend/prompt.txt:/app/backend/prompt.txt:ro
+      - ./backend/keywords.txt:/app/backend/keywords.txt:ro
+    restart: unless-stopped

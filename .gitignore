@@ -1,0 +1,28 @@
+# Secretos
+.env
+.env.*
+*.env
+# ...menos la plantilla, que va sin valores
+!.env.example
+
+# Python
+backend/venv/
+.venv-dev/
+__pycache__/
+backend/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Datos de producción (no versionar)
+data/
+logs/
+conversations.jsonl
+leads.jsonl
+sessions.json
+backend/uvicorn.log
+tests/.datos-test/
+
+# Sistema
+.DS_Store
+*.swp

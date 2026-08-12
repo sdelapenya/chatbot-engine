@@ -1,0 +1,31 @@
+# Palabras que marcan intención comercial en lo que escribe el cliente.
+# Sirven para etiquetar el lead, no para filtrar la conversación.
+# Cada instancia trae las suyas con KEYWORDS_FILE; esto es solo el ejemplo.
+presupuesto
+oferta
+precio
+cotización
+cotizacion
+comprar
+pedido
+encargo
+necesito
+quiero
+querría
+querria
+soy de
+empresa
+contacto
+llamadme
+llamarme
+contactadme
+metros
+unidades
+cantidad
+kilos
+kg
+mm
+cm
+plazo
+entrega
+disponibilidad
