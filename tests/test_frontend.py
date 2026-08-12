@@ -48,7 +48,7 @@ class TestEndpointsPublicos:
 
     def test_config_expone_la_identidad_de_la_instancia(self):
         datos = cliente.get("/api/config").json()
-        assert datos["company"] == "Elastómeros Ibérica S.L."
+        assert datos["company"] == "Industrias Ejemplo S.L."
         assert datos["bot"] == "Nora"
 
     def test_config_no_filtra_secretos(self):
@@ -70,7 +70,7 @@ class TestPanelYExportacion:
         assert respuesta.status_code == 200
         disposicion = respuesta.headers["content-disposition"]
         disposicion.encode("ascii")
-        assert "leads_elastomeros_iberica_s_l_" in disposicion
+        assert "leads_industrias_ejemplo_s_l_" in disposicion
 
     def test_el_csv_lleva_su_cabecera(self):
         respuesta = cliente.get("/api/leads/export", params={"token": "token-de-prueba"})

@@ -61,13 +61,13 @@ class TestSlug:
     # COMPANY_NAME lo pone cada instancia y trae acentos, puntos y paréntesis;
     # va a la cabecera Content-Disposition, que la RFC 6266 quiere en ASCII.
     def test_quita_acentos_y_puntuacion(self):
-        assert server._slug("Elastómeros Ibérica S.L.") == "elastomeros_iberica_s_l"
+        assert server._slug("Elastómeros Ejemplo S.L.") == "elastomeros_ejemplo_s_l"
 
     def test_parentesis_y_espacios(self):
-        assert server._slug("RP Clinic (demo)") == "rp_clinic_demo"
+        assert server._slug("Clínica Ejemplo (demo)") == "clinica_ejemplo_demo"
 
     def test_resultado_siempre_ascii(self):
-        for nombre in ("Clínica Dental Navalcarnero", "Señor Ñandú", "日本語", ""):
+        for nombre in ("Clínica Dental de Ejemplo", "Señor Ñandú", "日本語", ""):
             slug = server._slug(nombre)
             slug.encode("ascii")  # revienta si se cuela un byte no-ASCII
             assert slug

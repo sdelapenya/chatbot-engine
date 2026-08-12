@@ -632,7 +632,11 @@ _INTRO_STRIP_RE = re.compile(
 
 
 def _strip_repeated_intro(reply: str, messages: list[Message]) -> str:
-    """Quita 'Soy ESPONJA...' si ya hubo mensajes del asistente (bienvenida en UI)."""
+    """Quita el "Soy <BOT_NAME>…" del principio si ya hubo mensajes del asistente.
+
+    La bienvenida ya salió en pantalla: volver a presentarse en cada respuesta
+    suena a robot.
+    """
     if sum(1 for m in messages if m.role == "assistant") < 1:
         return reply
     cleaned = _INTRO_STRIP_RE.sub("", reply, count=1).strip()
@@ -1216,9 +1220,9 @@ def get_leads(token: str = Query(default="")):
 def _slug(texto: str) -> str:
     """Trozo seguro para un nombre de fichero: sin acentos, espacios ni puntuación.
 
-    `COMPANY_NAME` lo pone cada instancia y trae de todo — "Elastómeros Ibérica S.L.",
-    "RP Clinic (demo)". Metido tal cual en la cabecera Content-Disposition, un acento
-    es un byte no-ASCII que la RFC 6266 no admite sin codificar.
+    `COMPANY_NAME` lo pone cada instancia y trae de todo: acentos, puntos y
+    paréntesis. Metido tal cual en la cabecera Content-Disposition, un acento es
+    un byte no-ASCII que la RFC 6266 no admite sin codificar.
     """
     plano = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "_", plano.lower()).strip("_") or "instancia"

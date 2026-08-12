@@ -22,7 +22,7 @@ os.environ.update({
     "KEYWORDS_FILE": str(FIXTURES / "keywords.txt"),
     "FRONTEND_DIR": str(FIXTURES / "frontend"),
     "LOG_DIR": str(Path(__file__).parent / ".datos-test"),
-    "COMPANY_NAME": "Elastómeros Ibérica S.L.",
+    "COMPANY_NAME": "Industrias Ejemplo S.L.",
     "BOT_NAME": "Nora",
     "PANEL_TOKEN": "token-de-prueba",
     "GROQ_API_KEY": "clave-falsa-de-test",
